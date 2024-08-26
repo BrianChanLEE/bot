@@ -18,9 +18,10 @@ const swaggerOptions = {
     ],
   },
   apis: [
-    './src/controllers/blockController.js','./src/routers/blockRoutes.js',
+    // './src/controllers/ethController.js.js','./src/routers/blockRoutes.js',
     './src/controllers/mainController.js','./src/routers/helloRoutes.js',
     './src/controllers/orderController.js','./src/routers/marketRoutes.js',
+    './src/controllers/web3Controller.js','./src/routers/blockRoutes.js',
 
     
     ], // Swagger doc을 생성할 파일 경로

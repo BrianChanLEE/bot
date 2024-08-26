@@ -3,6 +3,39 @@ const {sendOrderbookEmail} = require('../services/mailler.js');
 const  Logger = require ("../lib/looger.js");
 const logger = new Logger("logs");
 
+/**
+ * @swagger
+ * /order/process:
+ *   post:
+ *     summary: 주문 처리
+ *     description: 거래 시간을 설정하고, 주문서를 가져와서 조건에 따라 새로운 매수 및 매도 주문을 생성합니다.
+ *     tags:
+ *       - Orders
+ *     responses:
+ *       200:
+ *         description: 주문 처리 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "주문 처리 완료"
+ *       500:
+ *         description: 서버 내부 오류로 인한 실패
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to process order"
+ */
 
 /**
  * 이 함수는 특정 시간 간격으로 시장 주문서를 조회하고, 조건에 따라
@@ -94,7 +127,60 @@ setTimeout(processOrder, randomDelay * 1000);
   }
 }
 
-
+/**
+ * @swagger
+ * /orderbook:
+ *   post:
+ *     summary: 주문서 가져오기
+ *     description: 특정 심볼에 대한 주문서를 가져옵니다.
+ *     tags:
+ *       - Orders
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               symbol:
+ *                 type: string
+ *                 description: 가져올 주문서의 심볼
+ *                 example: "IBTC_USDT"
+ *     responses:
+ *       200:
+ *         description: 주문서 가져오기 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 asks:
+ *                   type: array
+ *                   description: 매도 주문 목록
+ *                   items:
+ *                     type: array
+ *                     items:
+ *                       type: number
+ *                     example: [0.1, 100]
+ *                 bids:
+ *                   type: array
+ *                   description: 매수 주문 목록
+ *                   items:
+ *                     type: array
+ *                     items:
+ *                       type: number
+ *                     example: [0.1, 100]
+ *       500:
+ *         description: 주문서 가져오기 실패
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "주문서를 가져오는 데 실패했습니다."
+ */
 /**
  * 이 함수는 클라이언트로부터 특정 거래 쌍(symbol)을 요청받아 
  * 해당 거래 쌍의 주문서(order book)를 외부 API로부터 가져와 
@@ -121,7 +207,81 @@ async function getOrderbook(req, res) {
   }
 }
 
-
+/**
+ * @swagger
+ * /orderbook/send-email:
+ *   post:
+ *     summary: 주문서 가져오기 및 이메일 전송
+ *     description: 특정 심볼에 대한 주문서를 가져와 지정된 이메일 주소로 전송합니다.
+ *     tags:
+ *       - Orders
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               symbol:
+ *                 type: string
+ *                 description: 가져올 주문서의 심볼
+ *                 example: "IBTC_USDT"
+ *               email:
+ *                 type: string
+ *                 description: 주문서 데이터를 전송할 이메일 주소
+ *                 example: "user@example.com"
+ *     responses:
+ *       200:
+ *         description: 주문서 가져오기 및 이메일 전송 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "주문서 데이터가 이메일로 전송되었습니다."
+ *                 orderbook:
+ *                   type: object
+ *                   description: 요청한 심볼의 주문서 데이터
+ *                   properties:
+ *                     asks:
+ *                       type: array
+ *                       description: 매도 주문 목록
+ *                       items:
+ *                         type: array
+ *                         items:
+ *                           type: number
+ *                         example: [0.1, 100]
+ *                     bids:
+ *                       type: array
+ *                       description: 매수 주문 목록
+ *                       items:
+ *                         type: array
+ *                         items:
+ *                           type: number
+ *                         example: [0.1, 100]
+ *       400:
+ *         description: 잘못된 요청 (이메일 또는 심볼 누락)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "이메일 주소가 제공되지 않았습니다."
+ *       500:
+ *         description: 주문서 가져오기 또는 이메일 전송 실패
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "주문서를 가져오거나 이메일을 전송하는 데 실패했습니다."
+ */
 /**
  * 이 함수는 클라이언트로부터 특정 거래 쌍(symbol)과 이메일 주소를 요청받아,
  * 해당 거래 쌍의 주문서(order book)를 외부 API로부터 가져와 클라이언트에게 반환하고,

@@ -1,3 +1,22 @@
+/**
+ * @swagger
+ * /hello:
+ *   get:
+ *     summary: 환영 메시지 페이지 표시
+ *     description: X-widget Bot 응용 프로그램의 환영 메시지 페이지를 HTML로 반환합니다.
+ *     tags:
+ *       - General
+ *     produces:
+ *       - text/html
+ *     responses:
+ *       200:
+ *         description: HTML 페이지 반환 성공
+ *         content:
+ *           text/html:
+ *             schema:
+ *               type: string
+ *               example: "<!DOCTYPE html><html lang='en'>...</html>"
+ */
 exports.sayHello = (req, res) => {
     const html = `
         <!DOCTYPE html>

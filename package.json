@@ -1,0 +1,33 @@
+{
+  "name": "tradingbot",
+  "version": "1.0.0",
+  "description": "nodejs tradingbot digifinex",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js & pm2 start npm --name \"Boot\" --watch --log ./logs/app.log --time --error ./logs/app.log --output ./logs/app.log -- start",
+    "stop": "pm2 stop Boot ",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "tradingbot",
+    "digifinex"
+  ],
+  "author": "chan",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.4.5",
+    "expess": "^0.0.1-security",
+    "express": "^4.19.2",
+    "https": "^1.0.0",
+    "nodemailer": "^6.9.14",
+    "nodemon": "^3.1.4",
+    "Parser": "^0.0.1",
+    "pm2": "^5.4.2",
+    "querystring": "^0.2.1",
+    "winston": "^3.14.2"
+  }
+}

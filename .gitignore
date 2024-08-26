@@ -1,0 +1,12 @@
+
+# OrderBot_xwidgetaw.pem 파일 제외
+OrderBot_xwidgetaw.pem
+
+# node_modules 폴더 제외 
+node_modules/
+
+# logs 폴더 제외 
+logs/
+
+# env파일 제외
+.env

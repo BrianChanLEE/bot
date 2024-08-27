@@ -53,6 +53,96 @@ const getLatestBlockWeb3 = async (req, res) => {
 
 /**
  * @swagger
+ * /api/transaction/{transactionHash}:
+ *   get:
+ *     summary: 트랜잭션 정보 가져오기
+ *     description: 지정된 트랜잭션 해시에 대한 트랜잭션 정보를 가져옵니다.
+ *     tags:
+ *       - Blockchain
+ *     parameters:
+ *       - in: path
+ *         name: transactionHash
+ *         required: true
+ *         description: 조회할 트랜잭션의 해시
+ *         schema:
+ *           type: string
+ *           example: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+ *     responses:
+ *       200:
+ *         description: 트랜잭션 정보 가져오기 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 transaction:
+ *                   type: object
+ *                   description: 트랜잭션 정보
+ *                   properties:
+ *                     hash:
+ *                       type: string
+ *                       description: 트랜잭션 해시
+ *                       example: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+ *                     from:
+ *                       type: string
+ *                       description: 송신자 주소
+ *                       example: "0x1234567890abcdef1234567890abcdef12345678"
+ *                     to:
+ *                       type: string
+ *                       description: 수신자 주소
+ *                       example: "0xabcdef1234567890abcdef1234567890abcdef12"
+ *                     value:
+ *                       type: string
+ *                       description: 전송된 금액 (Wei 단위)
+ *                       example: "1000000000000000000"
+ *                     gas:
+ *                       type: integer
+ *                       description: 가스 한도
+ *                       example: 21000
+ *                     gasPrice:
+ *                       type: string
+ *                       description: 가스 가격 (Wei 단위)
+ *                       example: "20000000000"
+ *       500:
+ *         description: 트랜잭션 정보 가져오기 실패
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "트랜잭션 정보를 가져오는 데 실패했습니다."
+ */
+const getTransaction = async (req,res) => {
+    try {
+        const { transactionHash } = req.query;
+
+        // 트랜잭션 해시가 제공되지 않은 경우
+        if (!transactionHash) {
+            return res.status(400).json({ error: 'transactionHash가 제공되지 않았습니다.' });
+        }
+        const transaction = await web3.eth.getTransaction(transactionHash);
+        // 트랜잭션이 존재하지 않는 경우
+        if (!transaction) {
+            return res.status(404).json({ error: '해당 트랜잭션을 찾을 수 없습니다.' });
+        }
+ // BigInt를 처리하여 JSON으로 변환
+ const transactionWithBigIntStrings = JSON.parse(JSON.stringify(transaction, (key, value) =>
+    typeof value === 'bigint' ? value.toString() : value
+));
+
+res.json({ transaction: transactionWithBigIntStrings });;
+    } catch (error) {
+        logger.error(`트랜잭션 정보 가져오기 실패: ${error.message}`);
+        res.status(500).json({ error: '트랜잭션 정보를 가져오는 데 실패했습니다.' });
+    }
+}
+
+/************************************************************************************************************************************************************************/
+
+/**
+ * @swagger
  * /api/accounts:
  *   get:
  *     summary: 계정 목록 가져오기
@@ -317,79 +407,7 @@ const getBlockTransactionCount = async (req,res) => {
 }
 
 
-/**
- * @swagger
- * /api/transaction/{transactionHash}:
- *   get:
- *     summary: 트랜잭션 정보 가져오기
- *     description: 지정된 트랜잭션 해시에 대한 트랜잭션 정보를 가져옵니다.
- *     tags:
- *       - Blockchain
- *     parameters:
- *       - in: path
- *         name: transactionHash
- *         required: true
- *         description: 조회할 트랜잭션의 해시
- *         schema:
- *           type: string
- *           example: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
- *     responses:
- *       200:
- *         description: 트랜잭션 정보 가져오기 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 transaction:
- *                   type: object
- *                   description: 트랜잭션 정보
- *                   properties:
- *                     hash:
- *                       type: string
- *                       description: 트랜잭션 해시
- *                       example: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
- *                     from:
- *                       type: string
- *                       description: 송신자 주소
- *                       example: "0x1234567890abcdef1234567890abcdef12345678"
- *                     to:
- *                       type: string
- *                       description: 수신자 주소
- *                       example: "0xabcdef1234567890abcdef1234567890abcdef12"
- *                     value:
- *                       type: string
- *                       description: 전송된 금액 (Wei 단위)
- *                       example: "1000000000000000000"
- *                     gas:
- *                       type: integer
- *                       description: 가스 한도
- *                       example: 21000
- *                     gasPrice:
- *                       type: string
- *                       description: 가스 가격 (Wei 단위)
- *                       example: "20000000000"
- *       500:
- *         description: 트랜잭션 정보 가져오기 실패
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "트랜잭션 정보를 가져오는 데 실패했습니다."
- */
-const getTransaction = async (req,res) => {
-    try {
-        const { transactionHash } = req.params;
-        const transaction = await web3.eth.getTransaction(transactionHash);
-        res.json({ transaction });
-    } catch (error) {
-        logger.error(`트랜잭션 정보 가져오기 실패: ${error.message}`);
-        res.status(500).json({ error: '트랜잭션 정보를 가져오는 데 실패했습니다.' });
-    }
-}
+
 
 /**
  * @swagger
@@ -1095,6 +1113,9 @@ const personalSendTransaction = async (req,res) => {
         res.status(500).json({ error: '트랜잭션을 보내는 데 실패했습니다.' });
     }
 }
+
+
+
 // const createAccessListWeb3 = async(req,res) => {
 //     try {
 //         const AccessList = await web3.eth.createAccessList();

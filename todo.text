@@ -2,8 +2,12 @@
 1-1 기본번들 통신. 
 1-2 web3.js를 통한 통신.
 
-node.js express 로 만들어줘
+
 2. 사용자가 자기고 있는 txid(txhash)를 입력하여 요청하면, 그 세부 정보를 반환제공해준다. 
 역시 각각의 환경에 맞게 제공한다. 
 
- 이게 마스넷 
+
+transactionHash : 0xea5ade42154df3c28a700bbd1f93f4e6b37384518c572f7ec5be4f366f98056c
+
+
+ 
